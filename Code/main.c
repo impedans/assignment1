@@ -12,6 +12,7 @@ int main()
 	FILE *file;                  // Pointer to a file object
 	file = openfile("ECG.txt");
 
+    //Get three first datapoints:
     int *sampledDatapoints = (int*) malloc(3*sizeof(int));
     sampledDatapoints[0] = getNextData(file);          // Read Data from Sensor
     numDataPoints++;
