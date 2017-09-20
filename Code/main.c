@@ -14,8 +14,8 @@ int main()
 
     // Define the array holding the sampled data and the filtered data, respectively.
     // 32 is the max size we're gonna be working with
-    int *sampledDatapoints = (int*) malloc(42*sizeof(int));
-    int *filteredDatapoints = (int*) malloc(32*sizeof(int));
+    double *sampledDatapoints = (double*) malloc(42*sizeof(int));
+    double *filteredDatapoints = (double*) malloc(32*sizeof(int));
 
     // Sample 12 data points 
     numDataPoints = 12;
@@ -55,7 +55,7 @@ int main()
         }
 
         // Print the filtered values
-        printf("%d,", filteredDatapoints[filterIndex]);
+        printf("%f,", filteredDatapoints[filterIndex]);
         if (temp > 200){
             break;
         }
