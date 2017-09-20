@@ -56,7 +56,7 @@
 # --------------------------------
 CC := gcc
 CFLAGS := -g
-LINKER_FLAGS :=
+LINKER_FLAGS := -lm
 
 
 
@@ -80,15 +80,15 @@ all : app
 # ------ executable rule  -----------
 # -----------------------------------
 app : app.o
-	$(CC) $(CFLAGS) app.o -o app
+	$(CC) $(CFLAGS) $(LINKER_FLAGS) app.o -o app
 	@echo; echo $@ successfully created; echo
 
 
 # ---------------------------------------------------
 # ------ intermeditate object files rule (.o) -------
 # ---------------------------------------------------
-app.o : app.c
-	$(CC) $(CLFLAGS) -c app.c -o app.o
+app.o : main.c filters.c sensor.c
+	$(CC) $(CLFLAGS) $(LINKER_FLAGS) -c main.c filters.c sensor.c -o app.o
 
 
 
