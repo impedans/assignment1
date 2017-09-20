@@ -41,7 +41,7 @@ void movingWindowIntegration(double input[], double output[], int n){
     */
 
     /* Size of moving window integration*/
-    int N = 30;
+    double N = 30;
 
     /*
     Sum is saved in temp
