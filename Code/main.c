@@ -14,7 +14,7 @@ int main()
 
     // Define the array holding the sampled data and the filtered data, respectively.
     // 32 is the max size we're gonna be working with
-    int *sampledDatapoints = (int*) malloc(32*sizeof(int));
+    int *sampledDatapoints = (int*) malloc(42*sizeof(int));
     int *filteredDatapoints = (int*) malloc(32*sizeof(int));
 
     // Sample 12 data points 
@@ -28,17 +28,24 @@ int main()
     filteredDatapoints[1] = sampledDatapoints[11];
 
     int filterIndex = 2; // Start index for filtering
+    int temp = 1;
     while(1){
-        if (numDataPoints > 32){ // Only increase the array size if less than size 32
+        if (numDataPoints > 42){ // Only increase the array size if less than size 32
             // Shift array once to the left and get new sample
             for (int i = 0; i < 31; i++){
                 sampledDatapoints[i] = sampledDatapoints[i+1];
             }
             sampledDatapoints[31] = getNextData(file);
 
+            // Do all the filters
+            lowPassFilter(sampledDatapoints, filteredDatapoints, filterIndex);
+            highPassFilter(sampledDatapoints, filteredDatapoints, filterIndex);
+            derivativeFilter(sampledDatapoints, filteredDatapoints, filterIndex);
+            squareFilter(filteredDatapoints, filterIndex);
+            movingWindowIntegration(sampledDatapoints, filteredDatapoints, filterIndex);
+
         } else {
-            // Sample the three data points
-            //sampledDatapoints = (int*) realloc(sampledDatapoints, numDataPoints*sizeof(int));
+            // Sample the data point
             sampledDatapoints[numDataPoints] = getNextData(file);
             numDataPoints++;
 
@@ -46,7 +53,16 @@ int main()
             lowPassFilter(sampledDatapoints, filteredDatapoints, filterIndex);
             filterIndex++;
         }
+
+        // Print the filtered values
+        printf("%d,", filteredDatapoints[filterIndex]);
+        if (temp > 200){
+            break;
+        }
+        temp++;
     }
+
+    
 
     //peakDetection(&qsr_params); // Perform Peak Detection
 
