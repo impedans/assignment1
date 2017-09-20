@@ -88,7 +88,7 @@ app : app.o
 # ------ intermeditate object files rule (.o) -------
 # ---------------------------------------------------
 app.o : main.c filters.c sensor.c
-	$(CC) $(CLFLAGS) $(LINKER_FLAGS) -c main.c filters.c sensor.c -o app.o
+	$(CC) $(CLFLAGS) $(LINKER_FLAGS) main.c filters.c sensor.c -o app.o
 
 
 
