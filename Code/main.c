@@ -32,17 +32,17 @@ int main()
     while(1){
         if (numDataPoints > 42){ // Only increase the array size if less than size 32
             // Shift array once to the left and get new sample
-            for (int i = 0; i < 31; i++){
+            for (int i = 0; i < 41; i++){
                 sampledDatapoints[i] = sampledDatapoints[i+1];
             }
-            sampledDatapoints[31] = getNextData(file);
+            sampledDatapoints[41] = getNextData(file);
 
             // Do all the filters
             lowPassFilter(sampledDatapoints, filteredDatapoints, filterIndex);
-            highPassFilter(sampledDatapoints, filteredDatapoints, filterIndex);
-            derivativeFilter(sampledDatapoints, filteredDatapoints, filterIndex);
-            squareFilter(filteredDatapoints, filterIndex);
-            movingWindowIntegration(sampledDatapoints, filteredDatapoints, filterIndex);
+            //highPassFilter(sampledDatapoints, filteredDatapoints, filterIndex);
+            //derivativeFilter(sampledDatapoints, filteredDatapoints, filterIndex);
+            //squareFilter(filteredDatapoints, filterIndex);
+            //movingWindowIntegration(sampledDatapoints, filteredDatapoints, filterIndex);
 
         } else {
             // Sample the data point
@@ -55,7 +55,7 @@ int main()
         }
 
         // Print the filtered values
-        printf("%f,", filteredDatapoints[filterIndex]);
+        printf("IT: %d, before: %.2lf, beafter: %.2lf\n", temp, sampledDatapoints[filterIndex], filteredDatapoints[filterIndex]);
         if (temp > 200){
             break;
         }
