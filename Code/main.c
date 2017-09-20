@@ -12,15 +12,42 @@ int main()
 	FILE *file;                  // Pointer to a file object
 	file = openfile("ECG.txt");
 
-    int *sampledDatapoints = (int*) malloc(3*sizeof(int));
-    sampledDatapoints[0] = getNextData(file);          // Read Data from Sensor
-    numDataPoints++;
-    sampledDatapoints[1] = getNextData(file);          // Read Data from Sensor
-    numDataPoints++;
-    sampledDatapoints[2] = getNextData(file);          // Read Data from Sensor
-    numDataPoints++;
+    // Define the array holding the sampled data and the filtered data, respectively.
+    // 32 is the max size we're gonna be working with
+    int *sampledDatapoints = (int*) malloc(32*sizeof(int));
+    int *filteredDatapoints = (int*) malloc(32*sizeof(int));
 
-    lowPassFilter();            // Filter Data
+    // Sample 12 data points 
+    numDataPoints = 12;
+    for (int i = 0; i < numDataPoints; i++){
+        sampledDatapoints[i] = getNextData(file);
+    }
+
+    // pass the last two data points to the filter array
+    filteredDatapoints[0] = sampledDatapoints[10];
+    filteredDatapoints[1] = sampledDatapoints[11];
+
+    int filterIndex = 2; // Start index for filtering
+    while(1){
+        if (numDataPoints > 32){ // Only increase the array size if less than size 32
+            // Shift array once to the left and get new sample
+            for (int i = 0; i < 31; i++){
+                sampledDatapoints[i] = sampledDatapoints[i+1];
+            }
+            sampledDatapoints[31] = getNextData(file);
+
+        } else {
+            // Sample the three data points
+            //sampledDatapoints = (int*) realloc(sampledDatapoints, numDataPoints*sizeof(int));
+            sampledDatapoints[numDataPoints] = getNextData(file);
+            numDataPoints++;
+
+            // Start lowpass-filtration at index 2 and increase with each iteration
+            lowPassFilter(sampledDatapoints, filteredDatapoints, filterIndex);
+            filterIndex++;
+        }
+    }
+
     //peakDetection(&qsr_params); // Perform Peak Detection
 
 	return 0;
