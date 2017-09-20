@@ -12,12 +12,12 @@ int main()
 	FILE *file;                  // Pointer to a file object
 	file = openfile("ECG.txt");
 
-    int *initialDataPoints = (int*) malloc(3*sizeof(int));
-    initialDataPoints[0] = getNextData(file);          // Read Data from Sensor
+    int *sampledDatapoints = (int*) malloc(3*sizeof(int));
+    sampledDatapoints[0] = getNextData(file);          // Read Data from Sensor
     numDataPoints++;
-    initialDataPoints[1] = getNextData(file);          // Read Data from Sensor
+    sampledDatapoints[1] = getNextData(file);          // Read Data from Sensor
     numDataPoints++;
-    initialDataPoints[2] = getNextData(file);          // Read Data from Sensor
+    sampledDatapoints[2] = getNextData(file);          // Read Data from Sensor
     numDataPoints++;
 
     lowPassFilter();            // Filter Data
