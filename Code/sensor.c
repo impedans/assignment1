@@ -2,10 +2,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int getNextData(FILE *file)
+double getNextData(FILE *file)
 {
-   int nextDataValue;
-   fscanf(file, "%i", &nextDataValue);
+   double nextDataValue;
+   fscanf(file, "%lf", &nextDataValue);
+   //printf("DEBUG: %f\n", nextDataValue);
    return(nextDataValue); 
 }
 
