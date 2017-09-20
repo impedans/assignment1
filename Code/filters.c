@@ -32,7 +32,7 @@ void squareFilter(double output[], int n){
     y_n = sqrt((y_n)^2)
     */
 
-    output[n] = sqrt(output[n]^2);
+    output[n] = sqrt(pow(output[n],2));
 }
 
 void movingWindowIntegration(double input[], double output[], int n){
