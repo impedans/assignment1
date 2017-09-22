@@ -19,6 +19,7 @@ int main()
     while(1){
         //Checks for number of datapoints to be sufficient for the lowpass calculations:
         if(num_inputs >= 12){
+            //Calling lowpass filter
             lowPassFilter(input, output, num_outputs);
             
             //Checks for number of datapoints to be sufficient for the highpass calculations(and thus also the rest)
@@ -29,6 +30,7 @@ int main()
                 }
                 input[31] = getNextData(file);
 
+                //Calling filters:
                 highPassFilter(input, output, num_outputs);
                 derivativeFilter(input, output, num_outputs);
                 squareFilter(input, output);
