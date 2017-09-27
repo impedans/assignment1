@@ -3,8 +3,7 @@
 //#include "qsr.h"
 #include <stdio.h>
 #include <stdlib.h>
-
-int numDataPoints = 0; // Used to keep track of datapoint array size for use with malloc
+#include <unistd.h>
 
 int main()
 {	
@@ -12,58 +11,53 @@ int main()
 	FILE *file;                  // Pointer to a file object
 	file = openfile("ECG.txt");
 
-    // Define the array holding the sampled data and the filtered data, respectively.
-    // 32 is the max size we're gonna be working with
-    double *sampledDatapoints = (double*) malloc(42*sizeof(int));
-    double *filteredDatapoints = (double*) malloc(32*sizeof(int));
+    //Variable initialization
+    double *output = (double*) calloc(3, sizeof(double)); //Inilialize first outputs as zero
+    double *input  = (double*) malloc(32 * sizeof(double));
+    int num_inputs  = 0;
+    int num_outputs = 3;    //Minimum outputs for low pass filter
 
-    // Sample 12 data points 
-    numDataPoints = 12;
-    for (int i = 0; i < numDataPoints; i++){
-        sampledDatapoints[i] = getNextData(file);
-    }
-
-    // pass the last two data points to the filter array
-    filteredDatapoints[0] = sampledDatapoints[10];
-    filteredDatapoints[1] = sampledDatapoints[11];
-
-    int filterIndex = 2; // Start index for filtering
-    int temp = 1;
-    while(1){
-        if (numDataPoints > 42){ // Only increase the array size if less than size 32
-            // Shift array once to the left and get new sample
-            for (int i = 0; i < 41; i++){
-                sampledDatapoints[i] = sampledDatapoints[i+1];
+    while(!feof(file)){
+        //Checks for number of datapoints to be sufficient for the lowpass calculations:
+        if(num_inputs > 12){
+            //Shift array and remove oldest value
+            for(int i=0; i < num_outputs; i++){
+                output[i] = output[i+1];
             }
-            sampledDatapoints[41] = getNextData(file);
 
-            // Do all the filters
-            lowPassFilter(sampledDatapoints, filteredDatapoints, filterIndex);
-            //highPassFilter(sampledDatapoints, filteredDatapoints, filterIndex);
-            //derivativeFilter(sampledDatapoints, filteredDatapoints, filterIndex);
-            //squareFilter(filteredDatapoints, filterIndex);
-            //movingWindowIntegration(sampledDatapoints, filteredDatapoints, filterIndex);
-
-        } else {
-            // Sample the data point
-            sampledDatapoints[numDataPoints] = getNextData(file);
-            numDataPoints++;
-
-            // Start lowpass-filtration at index 2 and increase with each iteration
-            lowPassFilter(sampledDatapoints, filteredDatapoints, filterIndex);
-            filterIndex++;
+            //Calling lowpass filter
+            lowPassFilter(input, output, num_inputs-1);
+            
+            //Checks for number of datapoints to be sufficient for the highpass calculations(and thus also the rest)
+            if(num_inputs == 32){
+                //Shift array, remove oldest value and load newest value
+                for (int i = 0; i <= 32; i++){
+                    input[i] = input[i+1];
+                }
+                input[num_inputs] = getNextData(file);
+                //Calling filters:
+                //highPassFilter(input, output, num_outputs-1);
+                //derivativeFilter(input, output, num_outputs-1);
+                //squareFilter(input, output);
+                //movingWindowIntegration(input, output, num_outputs-1);
+            } else{
+                //Gets mores inputs if not enough
+                input[num_inputs] = getNextData(file);
+                num_inputs++;
+            }
+        } else{
+            //Gets more inputs if not enough
+            input[num_inputs] = getNextData(file);
+            num_inputs++;
         }
+        
+        //Debugging:
+        printf("Num_inputs: %d\nInput: %.2lf\nOutput: %.2lf\n\n",num_inputs-1, input[num_inputs-2], output[2]);
+        
+        sleep(1);
 
-        // Print the filtered values
-        printf("IT: %d, before: %.2lf, beafter: %.2lf\n", temp, sampledDatapoints[filterIndex], filteredDatapoints[filterIndex]);
-        if (temp > 200){
-            break;
-        }
-        temp++;
     }
-
     
-
     //peakDetection(&qsr_params); // Perform Peak Detection
 
 	return 0;

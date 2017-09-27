@@ -1,14 +1,16 @@
 #include "filters.h"
 #include <math.h>
 
-int offset = 10;
+int offset = 9;
 
 void lowPassFilter(double input[], double output[], int n){
     /*
     y_n = 2*y_(n-1) - y_(n-2) + (1/32)*(x_n - 2*x_(n-6) + x_(n-12))
     */
     
-    output[n] = 2*output[n-1] - output[n-2] + (1/32)*(input[n+offset] - 2*input[n+offset-6] + input[n+offset-12]);
+    output[2] = 2.0*output[1] - output[0] + (1.0/32.0)*(input[n] - 2.0*input[n-6] + input[n-12]);
+
+    printf("\nThis is the values %lf = 2*%lf-%lf+(1/32)*(%lf-2*%lf+%lf)\n", output[2], output[1], output[0], input[n], input[n-6], input[n-12]);
 }
 
 void highPassFilter(double input[], double output[], int n){
@@ -32,7 +34,7 @@ void squareFilter(double output[], int n){
     y_n = sqrt((y_n)^2)
     */
 
-    output[n] = sqrt(pow(output[n],2));
+    //output[n] = sqrt(pow(output[n],2));
 }
 
 void movingWindowIntegration(double input[], double output[], int n){
