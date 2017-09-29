@@ -2,6 +2,7 @@
 #include "filters.h"
 //#include "qsr.h"
 #include <stdio.h>
+#include <math.h>
 #include <stdlib.h>
 #include <unistd.h>
 
@@ -39,7 +40,7 @@ int main()
                 //Calling filters:
                 highPassFilter(input, output, num_outputs-1);
                 derivativeFilter(input, output, num_outputs-1);
-                squareFilter(output, num_output-1);
+                squareFilter(output, num_outputs-1);
                 movingWindowIntegration(input, output, num_outputs-1);
             } else{
                 //Gets mores inputs if not enough
