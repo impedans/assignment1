@@ -1,5 +1,6 @@
+# Compiler flags
 CC := gcc
-CFLAGS := -g
+CFLAGS := -Wall
 LINKER_FLAGS := -lm
 
 
@@ -7,9 +8,11 @@ LINKER_FLAGS := -lm
 .PHONY : all
 all : app
 
-# Intemediate object file
-app.o : main.c filters.c sensor.c
-	$(CC) $(CLFLAGS) $(LINKER_FLAGS) main.c filters.c sensor.c -o app.o
+
+# Compilation rule
+app : main.c filters.c sensor.c
+	$(CC) main.c sensor.c filters.c $(LINKER_FLAGS) -o app
+	@echo; echo $@ compiled; echo
 
 # make clean
 .PHONY : clean
