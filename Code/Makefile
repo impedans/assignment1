@@ -79,9 +79,9 @@ all : app
 # -----------------------------------
 # ------ executable rule  -----------
 # -----------------------------------
-app : app.o
-	$(CC) $(CFLAGS) $(LINKER_FLAGS) app.o -o app
-	@echo; echo $@ successfully created; echo
+#app.o : app.o
+	#$(CC) $(CFLAGS) $(LINKER_FLAGS) app.o -o app
+	#@echo; echo $@ successfully created; echo
 
 
 # ---------------------------------------------------
