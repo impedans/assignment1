@@ -35,11 +35,12 @@ int main()
                     input[i] = input[i+1];
                 }
                 input[num_inputs] = getNextData(file);
-                //Calling filters:
-                //highPassFilter(input, output, num_outputs-1);
-                //derivativeFilter(input, output, num_outputs-1);
-                //squareFilter(input, output);
-                //movingWindowIntegration(input, output, num_outputs-1);
+
+                Calling filters:
+                highPassFilter(input, output, num_outputs-1);
+                derivativeFilter(input, output, num_outputs-1);
+                squareFilter(input, output);
+                movingWindowIntegration(input, output, num_outputs-1);
             } else{
                 //Gets mores inputs if not enough
                 input[num_inputs] = getNextData(file);
