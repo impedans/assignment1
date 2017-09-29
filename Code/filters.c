@@ -24,7 +24,7 @@ void derivativeFilter(double input[], double output[], int n){
     y_n = (1/8)*(2*x_n + x_(n-1) - x(n-3) - 2*x_(n-4))
     */
 
-    output[n] = (1/8)*(2*input[n] + input[n-1] - input[n-3] - 2*input[n-4]);
+    output[n] = (1.0/8.0)*(2.0*input[n] + input[n-1] - input[n-3] - 2*input[n-4]);
 }
 
 void squareFilter(double output[], int n){
@@ -41,18 +41,14 @@ void movingWindowIntegration(double input[], double output[], int n){
     */
 
     /* Size of moving window integration*/
-    double N = 30;
+    int N = 30;
 
-    /*
-    Sum is saved in temp
-    */
+    /* Sum is saved in temp*/
     int temp;
     for(int i=1; i<=30; i++){
-        temp += input[n-30-i];
+        temp += input[n-(30-i)];
     }
 
-    /*
-    Multiplication part of calculation is made
-    */
-    output[n] = (1/30)*temp;
+    /* Multiplication part of calculation is made*/
+    output[n] = (1.0/30.0)*temp;
 }
