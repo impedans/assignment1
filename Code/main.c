@@ -1,6 +1,6 @@
 #include "sensor.h"
 #include "filters.h"
-//#include "qsr.h"
+#include "qsr.h"
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
@@ -8,7 +8,15 @@
 
 int main()
 {	
-    //QRS_params qsr_params;       // Instance of the made avaiable through: #include "qsr.h"
+    // R Peak detection initialization
+    QRS_params qsr_params;
+    qsr_params.numPeaks = 0;
+    qsr_params.PEAKS = malloc(sizeof(double)); // Will contain an unknown amount of elements
+    qsr_params.numRPeaks = 0;
+    qsr_params.RPEAKS = calloc(8, 8*sizeof(double)); // Will only contain at most 8 elements
+    qsr_params.numROKPeaks = 0;
+    qsr_params.ROKPEAKS = calloc(8, 8*sizeof(double)); // Will only contain at most 8 elements
+
 	FILE *file;                  // Pointer to a file object
 	file = openfile("ECG.txt");
 
@@ -47,6 +55,10 @@ int main()
                 input[num_inputs] = getNextData(file);
                 num_inputs++;
             }
+
+            // Peak detection
+            peakDetection(&qsr_params, output); // Perform Peak Detection
+
         } else{
             //Gets more inputs if not enough
             input[num_inputs] = getNextData(file);
@@ -60,7 +72,6 @@ int main()
 
     }
     
-    //peakDetection(&qsr_params); // Perform Peak Detection
 
 	return 0;
 }
