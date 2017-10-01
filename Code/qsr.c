@@ -82,6 +82,15 @@ void peakDetection(QRS_params *params, int filterOutput[])
                     params->SPKF = 0.25*peak2 + 0.75*params->SPKF;
 
                     // Store RR in recentRR
+                    if(params->numRecentRR < 7){
+                        params->RecentRR[params->numRecentRR] = RR;
+                        params->numRecentRR++;
+                    } else {
+                       for (int i = 0; i < params->numRecentRR; i++){
+                            params->RecentRR[params->numRecentRR] = params->RecentRR[params->numRecentRR+1];
+                       } 
+                       params->RecentRR[params->numRecentRR] = RR;
+                    }
 
                     // Update RR_AVERAGE 1
                     int temp = 0;
