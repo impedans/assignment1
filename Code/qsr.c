@@ -9,7 +9,7 @@ void peakDetection(QRS_params *params, double filterOutput[])
         //if ((filterOutput[i] > filterOutput[i+1]) && (filterOutput[i] > filterOutput[i-1])){
         
         // Check if a peak is present at index 30
-        if ((filterOutput[30] > filterOutput[31]) && (filterOutput[30] > filterOutput[29])){
+        if ((filterOutput[1] > filterOutput[2]) && (filterOutput[1] > filterOutput[0])){
             //printf("COMPARING: %lf, %lf, %lf\n", filterOutput[29], filterOutput[30], filterOutput[31]);
             params->PEAKS[params->numPeaks] = filterOutput[30]; // Add the peak to the PEAKS array
             params->numPeaks++; // Increment amount of peaks
