@@ -12,8 +12,10 @@ typedef struct QRS_params
    double *PEAKS;
    int numRPeaks;
    double *RPEAKS;
-   int numROKPeaks;
-   double *ROKPEAKS;
+   int numRecentRR;
+   double *RecentRR;
+   int numRecentRROK;
+   double *RecentRROK;
 
    int RR_AVERAGE1;
    int RR_AVERAGE2;
