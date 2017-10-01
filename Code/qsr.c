@@ -5,17 +5,11 @@
 // This function compares the last three datapoints in the filtered data and determines if the middle data point is a peak
 void peakDetection(QRS_params *params, double filterOutput[])
 {
-    //for (int i = 1; i < 31; i++){
-        //if ((filterOutput[i] > filterOutput[i+1]) && (filterOutput[i] > filterOutput[i-1])){
-        
         // Check if a peak is present at index 1
         if ((filterOutput[1] > filterOutput[2]) && (filterOutput[1] > filterOutput[0])){
-            //printf("COMPARING: %lf, %lf, %lf\n", filterOutput[29], filterOutput[30], filterOutput[31]);
             params->PEAKS[params->numPeaks] = filterOutput[1]; // Add the peak to the PEAKS array
             params->numPeaks++; // Increment amount of peaks
             params->PEAKS = realloc(params->PEAKS, (params->numPeaks+1)*sizeof(double)); // Increase size of dynamic array
-            //printf("PEAK: %lf, total: %d\n", filterOutput[30], params->numPeaks);
-            
 
             // Check if the peak is above the threshold
             if (filterOutput[1] > params->THRESHOLD1){
@@ -108,8 +102,5 @@ void peakDetection(QRS_params *params, double filterOutput[])
                 params->THRESHOLD1 = params->NPKF + 0.25*(params->SPKF-params->NPKF);
                 params->THRESHOLD2 = 0.5*params->THRESHOLD1;
             }
-
-
         }
-    //}
 }
