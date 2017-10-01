@@ -3,17 +3,17 @@
 #include <stdlib.h>
 
 // This function compares the last three datapoints in the filtered data and determines if the middle data point is a peak
-void peakDetection(QRS_params *params, double filterOutput[])
+void peakDetection(QRS_params *params, int filterOutput[])
 {
         // Check if a peak is present at index 1
         if ((filterOutput[1] > filterOutput[2]) && (filterOutput[1] > filterOutput[0])){
             params->PEAKS[params->numPeaks] = filterOutput[1]; // Add the peak to the PEAKS array
             params->numPeaks++; // Increment amount of peaks
-            params->PEAKS = realloc(params->PEAKS, (params->numPeaks+1)*sizeof(double)); // Increase size of dynamic array
+            params->PEAKS = realloc(params->PEAKS, (params->numPeaks+1)*sizeof(int)); // Increase size of dynamic array
 
             // Check if the peak is above the threshold
             if (filterOutput[1] > params->THRESHOLD1){
-                double RR = 0;
+                int RR = 0;
                 if (params->numRPeaks > 2){
                     RR = params->RPEAKS[params->numRPeaks]-params->RPEAKS[params->numRPeaks-1];
                 } 
@@ -47,7 +47,7 @@ void peakDetection(QRS_params *params, double filterOutput[])
                     }
 
                     // Calculate the RR averages
-                    double temp = 0;
+                    int temp = 0;
                     for (int i = 0; i < params->numRecentRR; i++){
                         temp += params->RecentRR[i];
                     } 
@@ -67,7 +67,7 @@ void peakDetection(QRS_params *params, double filterOutput[])
 
                 } else if (RR > params->RR_MISS){
                     // Search through all peaks and find the first peak above THRESHOLD2
-                    double peak2;
+                    int peak2;
                     for (int i = 0; i < params->numPeaks; i++){
                        if (params->PEAKS[i] > params->THRESHOLD2){
                         peak2 = params->PEAKS[i];
@@ -84,7 +84,7 @@ void peakDetection(QRS_params *params, double filterOutput[])
                     // Store RR in recentRR
 
                     // Update RR_AVERAGE 1
-                    double temp = 0;
+                    int temp = 0;
                     for (int i = 0; i < params->numRPeaks; i++){
                         temp += params->RPEAKS[i];
                     }

@@ -1,6 +1,6 @@
 #include "sensor.h"
 #include "filters.h"
-//#include "qsr.h"
+#include "qsr.h"
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
@@ -8,7 +8,16 @@
 
 int main()
 {	
-    //QRS_params qsr_params;       // Instance of the made avaiable through: #include "qsr.h"
+    QRS_params qsr_params;
+    qsr_params.numPeaks = 0;
+    qsr_params.PEAKS = malloc(sizeof(double)); // Will contain an unknown amount of elements
+    qsr_params.numRPeaks = 0;
+    qsr_params.RPEAKS = calloc(8, 8*sizeof(double)); // Will only contain at most 8 elements
+    qsr_params.numRecentRR = 0;
+    qsr_params.RecentRR = calloc(8, 8*sizeof(double)); // Will only contain at most 8 elements
+    qsr_params.numRecentRROK = 0;
+    qsr_params.RecentRROK = calloc(8, 8*sizeof(double)); // Will only contain at most 8 elements
+    
 	FILE *file;                  // Pointer to a file object
 	file = openfile("ECG.txt");
 
@@ -33,7 +42,7 @@ int main()
             }
             input[num_inputs-1] = getNextData(file);
             
-            sleep(1);
+            //sleep(1);
         }else{
             //Gets more inputs if not enough
             num_inputs++;
@@ -49,15 +58,15 @@ int main()
         derivativeFilter(output_temp2, output_temp3, num_inputs-1);
         squareFilter(output_temp3, num_inputs-1);
         movingWindowIntegration(output_temp3, output, num_inputs-1);
+        peakDetection(&qsr_params, output);
 
         //Debugging
         //Final action:
-        printf("\nItteration: %d. Outputs: %d, %d, %d To inputs: %d, %d, %d\n",num_inputs, output[num_inputs-1], output[num_inputs-2], output[num_inputs-3], input[num_inputs-1], input[num_inputs-2], input[num_inputs-3]);
+        //printf("\nItteration: %d. Outputs: %d, %d, %d To inputs: %d, %d, %d\n",num_inputs, output[num_inputs-1], output[num_inputs-2], output[num_inputs-3], input[num_inputs-1], input[num_inputs-2], input[num_inputs-3]);
 
 
     }
     
-    //peakDetection(&qsr_params); // Perform Peak Detection
 
 	return 0;
 }
