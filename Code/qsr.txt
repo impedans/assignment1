@@ -1,0 +1,10 @@
+
+    QRS_params qsr_params;
+    qsr_params.numPeaks = 0;
+    qsr_params.PEAKS = malloc(sizeof(double)); // Will contain an unknown amount of elements
+    qsr_params.numRPeaks = 0;
+    qsr_params.RPEAKS = calloc(8, 8*sizeof(double)); // Will only contain at most 8 elements
+    qsr_params.numRecentRR = 0;
+    qsr_params.RecentRR = calloc(8, 8*sizeof(double)); // Will only contain at most 8 elements
+    qsr_params.numRecentRROK = 0;
+    qsr_params.RecentRROK = calloc(8, 8*sizeof(double)); // Will only contain at most 8 elements

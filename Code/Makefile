@@ -11,7 +11,7 @@ all : app
 
 # Compilation rule
 app : main.c filters.c sensor.c
-	$(CC) main.c sensor.c filters.c $(LINKER_FLAGS) -o app
+	$(CC) main.c sensor.c filters.c qsr.c $(LINKER_FLAGS) -o app
 	@echo; echo $@ compiled; echo
 
 # make clean
