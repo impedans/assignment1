@@ -16,9 +16,13 @@ int main()
     qsr_params.RPEAKS = calloc(8, 8*sizeof(double)); // Will only contain at most 8 elements
     qsr_params.numROKPeaks = 0;
     qsr_params.ROKPEAKS = calloc(8, 8*sizeof(double)); // Will only contain at most 8 elements
+    qsr_params.numRecentRR = 0;
+    qsr_params.RecentRR = calloc(8, 8*sizeof(double)); // Will only contain at most 8 elements
+    qsr_params.numRecentRROK = 0;
+    qsr_params.RecentRROK = calloc(8, 8*sizeof(double)); // Will only contain at most 8 elements
 
 	FILE *file;                  // Pointer to a file object
-	file = openfile("ECG.txt");
+	file = openfile("x_mwi.txt");
 
     //Variable initialization
     double *output = (double*) calloc(3, sizeof(double)); //Inilialize first outputs as zero
@@ -28,14 +32,15 @@ int main()
 
     while(!feof(file)){
         //Checks for number of datapoints to be sufficient for the lowpass calculations:
-        if(num_inputs > 12){
+        
+        /*if(num_inputs > 12){
             //Shift array and remove oldest value
             for(int i=0; i < num_outputs; i++){
                 output[i] = output[i+1];
             }
 
             //Calling lowpass filter
-            lowPassFilter(input, output, num_inputs-1);
+            //lowPassFilter(input, output, num_inputs-1);
             
             //Checks for number of datapoints to be sufficient for the highpass calculations(and thus also the rest)
             if(num_inputs == 32){
@@ -46,28 +51,35 @@ int main()
                 input[num_inputs] = getNextData(file);
 
                 //Calling filters:
-                highPassFilter(input, output, num_outputs-1);
-                derivativeFilter(input, output, num_outputs-1);
-                squareFilter(output, num_outputs-1);
-                movingWindowIntegration(input, output, num_outputs-1);
+                //highPassFilter(input, output, num_outputs-1);
+                //derivativeFilter(input, output, num_outputs-1);
+                //squareFilter(output, num_outputs-1);
+                //movingWindowIntegration(input, output, num_outputs-1);
             } else{
                 //Gets mores inputs if not enough
                 input[num_inputs] = getNextData(file);
                 num_inputs++;
             }
 
-            // Peak detection
-            peakDetection(&qsr_params, output); // Perform Peak Detection
 
         } else{
             //Gets more inputs if not enough
             input[num_inputs] = getNextData(file);
             num_inputs++;
-        }
+        }*/
         
-        //Debugging:
-        printf("Num_inputs: %d\nInput: %.2lf\nOutput: %.2lf\n\n",num_inputs-1, input[num_inputs-2], output[2]);
-        
+       // Peak detection
+       if (num_inputs == 32){
+            for(int i=0; i < num_outputs; i++){
+                output[i] = output[i+1];
+            }
+            output[num_inputs] = getNextData(file);
+            num_inputs++;
+           peakDetection(&qsr_params, output); // Perform Peak Detection
+       } else {
+            output[num_inputs] = getNextData(file);
+            num_inputs++;
+       }
         sleep(1);
 
     }

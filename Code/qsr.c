@@ -7,6 +7,7 @@ void peakDetection(QRS_params *params, double filterOutput[])
 {
     //for (int i = 1; i < 31; i++){
         //if ((filterOutput[i] > filterOutput[i+1]) && (filterOutput[i] > filterOutput[i-1])){
+        
         // Check if a peak is present at index 30
         if ((filterOutput[30] > filterOutput[31]) && (filterOutput[30] > filterOutput[29])){
             //printf("COMPARING: %lf, %lf, %lf\n", filterOutput[29], filterOutput[30], filterOutput[31]);
@@ -18,39 +19,50 @@ void peakDetection(QRS_params *params, double filterOutput[])
 
             // Check if the peak is above the threshold
             if (filterOutput[30] > params->THRESHOLD1){
-                if ((RR > RR_LOW) && (RR < RR_HIGH)){
+                double RR = 0;
+                if (params->numRPeaks > 2){
+                    RR = params->RPEAKS[params->numRPeaks]-params->RPEAKS[params->numRPeaks-1];
+                } 
+
+                if ((RR > params->RR_LOW) && (RR < params->RR_HIGH)){
                     // Store peak as Rpeak
-                    PEAK AS RPEAK
+                    params->RPEAKS[params->numRPeaks] = filterOutput[30];
+                    params->numRPeaks++;
 
                     // The peak is above the threshold, so calculate the RR and update parameters
                     params->SPKF = 0.125*filterOutput[30] + 0.875*params->SPKF;
 
-                    // Shift the RPEAKS and ROKPEAKS arrays to make ready for a new value
-                    for (int i = 0; i < 7; i++){ // Make space for the newest element
-                        params->RPEAKS[i] = params->RPEAKS[i+1];
-                        params->ROKPEAKS[i] = params->ROKPEAKS[i+1];
+                    // Store RR element in RecentRR and RecentRROK
+                    if(params->numRecentRR < 7){
+                        params->RecentRR[params->numRecentRR] = RR;
+                        params->numRecentRR++;
+                    } else {
+                       for (int i = 0; i < params->numRecentRR; i++){
+                            params->RecentRR[params->numRecentRR] = params->RecentRR[params->numRecentRR+1];
+                       } 
+                       params->RecentRR[params->numRecentRR] = RR;
                     }
-                    // Add the R peak to the relevant arrays and increment vars
-                    params->RPEAKS[params->numRPeaks] = params->RR;
-                    params->ROKPEAKS[params->numROKPeaks] = params->RR;
-                    if (params->numRPeaks < 7){
-                        params->numRPeaks++;
-                    }
-                    if (params->numROKPeaks < 7){
-                        params->numROKPeaks++;
+                    if(params->numRecentRROK < 7){
+                        params->RecentRROK[params->numRecentRROK] = RR;
+                        params->numRecentRROK++;
+                    } else {
+                       for (int i = 0; i < params->numRecentRROK; i++){
+                            params->RecentRROK[params->numRecentRROK] = params->RecentRROK[params->numRecentRROK+1];
+                       } 
+                       params->RecentRROK[params->numRecentRROK] = RR;
                     }
 
-                    // Calculate RR_AVERAGE1 and RR_AVERAGE2
+                    // Calculate the RR averages
                     double temp = 0;
-                    for (int i = 0; i < params->numROKPeaks; i++){
-                        temp += params->ROKPEAKS[i];
-                    }
-                    params->RR_AVERAGE2 = temp/params->numROKPeaks;
+                    for (int i = 0; i < params->numRecentRR; i++){
+                        temp += params->RecentRR[i];
+                    } 
+                    params->RR_AVERAGE2 = temp/params->numRecentRR;
                     temp = 0;
-                    for (int i = 0; i < params->numRPeaks; i++){
-                        temp += params->RPEAKS[i];
-                    }
-                    params->RR_AVERAGE1 = temp/params->numRPeaks;
+                    for (int i = 0; i < params->numRecentRROK; i++){
+                        temp += params->RecentRROK[i];
+                    } 
+                    params->RR_AVERAGE1 = temp/params->numRecentRROK;
 
                     // Calculate other parameters
                     params->RR_LOW = 0.92*params->RR_AVERAGE2;
@@ -58,7 +70,8 @@ void peakDetection(QRS_params *params, double filterOutput[])
                     params->RR_MISS = 1.66*params->RR_AVERAGE2;
                     params->THRESHOLD1 = params->NPKF + 0.25*(params->SPKF-params->NPKF);
                     params->THRESHOLD2 = 0.5*params->THRESHOLD1;
-                } else if (RR > RR_MISS){
+
+                } else if (RR > params->RR_MISS){
                     // Search through all peaks and find the first peak above THRESHOLD2
                     double peak2;
                     for (int i = 0; i < params->numPeaks; i++){
@@ -68,7 +81,8 @@ void peakDetection(QRS_params *params, double filterOutput[])
                        } 
                     }
                     // Store peak2 as RPEAK
-                    PEAK2 AS RPEAK
+                    params->RPEAKS[params->numRPeaks] = peak2;
+                    params->numRPeaks++;
 
                     // Calculate SPKF again
                     params->SPKF = 0.25*peak2 + 0.75*params->SPKF;
