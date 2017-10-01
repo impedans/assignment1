@@ -8,17 +8,17 @@ void peakDetection(QRS_params *params, double filterOutput[])
     //for (int i = 1; i < 31; i++){
         //if ((filterOutput[i] > filterOutput[i+1]) && (filterOutput[i] > filterOutput[i-1])){
         
-        // Check if a peak is present at index 30
+        // Check if a peak is present at index 1
         if ((filterOutput[1] > filterOutput[2]) && (filterOutput[1] > filterOutput[0])){
             //printf("COMPARING: %lf, %lf, %lf\n", filterOutput[29], filterOutput[30], filterOutput[31]);
-            params->PEAKS[params->numPeaks] = filterOutput[30]; // Add the peak to the PEAKS array
+            params->PEAKS[params->numPeaks] = filterOutput[1]; // Add the peak to the PEAKS array
             params->numPeaks++; // Increment amount of peaks
             params->PEAKS = realloc(params->PEAKS, (params->numPeaks+1)*sizeof(double)); // Increase size of dynamic array
             //printf("PEAK: %lf, total: %d\n", filterOutput[30], params->numPeaks);
             
 
             // Check if the peak is above the threshold
-            if (filterOutput[30] > params->THRESHOLD1){
+            if (filterOutput[1] > params->THRESHOLD1){
                 double RR = 0;
                 if (params->numRPeaks > 2){
                     RR = params->RPEAKS[params->numRPeaks]-params->RPEAKS[params->numRPeaks-1];
@@ -26,11 +26,11 @@ void peakDetection(QRS_params *params, double filterOutput[])
 
                 if ((RR > params->RR_LOW) && (RR < params->RR_HIGH)){
                     // Store peak as Rpeak
-                    params->RPEAKS[params->numRPeaks] = filterOutput[30];
+                    params->RPEAKS[params->numRPeaks] = filterOutput[1];
                     params->numRPeaks++;
 
                     // The peak is above the threshold, so calculate the RR and update parameters
-                    params->SPKF = 0.125*filterOutput[30] + 0.875*params->SPKF;
+                    params->SPKF = 0.125*filterOutput[1] + 0.875*params->SPKF;
 
                     // Store RR element in RecentRR and RecentRROK
                     if(params->numRecentRR < 7){
@@ -104,7 +104,7 @@ void peakDetection(QRS_params *params, double filterOutput[])
 
             } else {
                 // The peak is below the threshold, so it's noise, therefore modify the following parameters
-                params->NPKF = 0.125*filterOutput[30] + 0.875*params->NPKF;
+                params->NPKF = 0.125*filterOutput[1] + 0.875*params->NPKF;
                 params->THRESHOLD1 = params->NPKF + 0.25*(params->SPKF-params->NPKF);
                 params->THRESHOLD2 = 0.5*params->THRESHOLD1;
             }
