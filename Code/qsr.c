@@ -4,20 +4,20 @@
 #include <stdlib.h>
 
 // This function compares the last three datapoints in the filtered data and determines if the middle data point is a peak
-void peakDetection(QRS_params *params, int *filterOutput, int numInputs)
+void peakDetection(QRS_params *params, int *filterOutput, int index)
 {
     // Don't do peak detection until we have sufficient inputs
-    if (numInputs < 3){
+    if (index < 3){
         return;
     }
 
     // Check if output at index 1 is a peak
-    if ((filterOutput[numInputs-2] > filterOutput[numInputs-3]) && (filterOutput[numInputs-2] > filterOutput[numInputs-1])){
-        params->PEAKS[params->numPeaks] = filterOutput[numInputs-2];
+    if ((filterOutput[index-1] > filterOutput[index-2]) && (filterOutput[index-1] > filterOutput[index])){
+        params->PEAKS[params->numPeaks] = filterOutput[index-1];
         params->numPeaks++;
         params->PEAKS = realloc(params->PEAKS, (params->numPeaks+1)*sizeof(int)); // Increase size of dynamic array
 
-        if (filterOutput[numInputs-2] > params->THRESHOLD1){
+        if (filterOutput[index-1] > params->THRESHOLD1){
             // Calculate the RR interval
             int RR = params->samplesSinceLastRpeak;
             if ((params->samplesSinceLastRpeakTemp-1)>2170 && (params->samplesSinceLastRpeakTemp-1)<2340){
@@ -29,12 +29,12 @@ void peakDetection(QRS_params *params, int *filterOutput, int numInputs)
 
             if ((RR > params->RR_LOW) && (RR < params->RR_HIGH)){
                 // Store peak as Rpeak
-                params->RPEAKS[params->numRPeaks] = filterOutput[numInputs-2];
+                params->RPEAKS[params->numRPeaks] = filterOutput[index-2];
                 params->numRPeaks++;
                 params->RPEAKS = realloc(params->RPEAKS, (params->numRPeaks+1)*sizeof(int));
 
                 // Update the SPKF
-                params->SPKF = 0.125*filterOutput[numInputs-2] + 0.875*params->SPKF;
+                params->SPKF = 0.125*filterOutput[index-1] + 0.875*params->SPKF;
 
                 // Store RR element in RecentRR and RecentRROK
                 if(params->numRecentRR < 7){
@@ -121,7 +121,7 @@ void peakDetection(QRS_params *params, int *filterOutput, int numInputs)
             } 
 
         } else {
-            params->NPKF = 0.125*filterOutput[numInputs-2] + 0.875*params->NPKF;
+            params->NPKF = 0.125*filterOutput[index-2] + 0.875*params->NPKF;
             params->THRESHOLD1 = params->NPKF + 0.25*(params->SPKF-params->NPKF);
             params->THRESHOLD2 = 0.5*params->THRESHOLD1;
         }

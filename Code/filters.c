@@ -25,7 +25,7 @@ void lowPassFilter(int input[], int output[], int n){
 
 void highPassFilter(int input[], int output[], int n){
     /*
-    y_n = y_(n-1) - x_n/32 + x_(n-16) - x_(n-17) + x_(n-32)/32
+    y_n = y_(n-1) - x_n/32 + x_(n-16) - x_(n-17) - x_(n-32)/32
     */
 
     if(n>=32){
