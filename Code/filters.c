@@ -62,7 +62,7 @@ void squareFilter(int output[], int n){
     y_n = sqrt((y_n)^2)
     */
 
-    output[n] = sqrt(pow(output[n],2));
+    output[n] = pow(output[n],2);
 }
 
 void movingWindowIntegration(int input[], int output[], int n){
@@ -77,7 +77,7 @@ void movingWindowIntegration(int input[], int output[], int n){
     
         /* Sum is saved in temp*/
         for(int i=1; i<=N; i++){
-            temp += input[n-(N-i)];
+            temp += (input[n-(N-i)]);
         }
 
         /* Multiplication part of calculation is made*/
@@ -88,7 +88,7 @@ void movingWindowIntegration(int input[], int output[], int n){
 
         /* Sum is saved in temp*/
         for(int i=1; i<=N; i++){
-            temp += input[n-(N-i)];
+            temp += (input[n-(N-i)]);
         }
 
         /* Multiplication part of calculation is made*/
