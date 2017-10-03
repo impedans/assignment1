@@ -3,23 +3,30 @@
 #include <stdlib.h>
 
 // This function compares the last three datapoints in the filtered data and determines if the middle data point is a peak
-void peakDetection(QRS_params *params, int filterOutput[])
+void peakDetection(QRS_params *params, int *filterOutput)
 {
+    //printf("INPUTS 1 2 0 : %d, %d, %d\n", filterOutput[1], filterOutput[2], filterOutput[0]);
         // Check if a peak is present at index 1
         if ((filterOutput[1] > filterOutput[2]) && (filterOutput[1] > filterOutput[0])){
+            //printf("PEAK PRESENT\n");
             params->PEAKS[params->numPeaks] = filterOutput[1]; // Add the peak to the PEAKS array
             params->numPeaks++; // Increment amount of peaks
             params->PEAKS = realloc(params->PEAKS, (params->numPeaks+1)*sizeof(int)); // Increase size of dynamic array
 
             // Check if the peak is above the threshold
             if (filterOutput[1] > params->THRESHOLD1){
-                int RR = 0;
-                if (params->numRPeaks > 2){
-                    RR = params->RPEAKS[params->numRPeaks]-params->RPEAKS[params->numRPeaks-1];
-                } 
+                //printf("ABOVE THRESHOLD\n");
 
+                //printf("samples: %d\n", params->samplesSinceLastRpeak);
+                double RR = params->samplesSinceLastRpeak/250;
+                
+                params->samplesSinceLastRpeak = 0;
+                //printf("RR: %lf\n", RR);
+
+                //printf("checking: %lf > %lf and %lf < %lf\n", RR, params->RR_LOW, RR, params->RR_HIGH);
                 if ((RR > params->RR_LOW) && (RR < params->RR_HIGH)){
                     // Store peak as Rpeak
+                    printf("ADDING RPEAK: %d\n", filterOutput[1]);
                     params->RPEAKS[params->numRPeaks] = filterOutput[1];
                     params->numRPeaks++;
 
@@ -66,14 +73,15 @@ void peakDetection(QRS_params *params, int filterOutput[])
                     params->THRESHOLD2 = 0.5*params->THRESHOLD1;
 
                 } else if (RR > params->RR_MISS){
+                    double peak2;
                     // Search through all peaks and find the first peak above THRESHOLD2
-                    int peak2;
-                    for (int i = 0; i < params->numPeaks; i++){
+                    for (int i = params->numPeaks-1; i >= 0; i--){
                        if (params->PEAKS[i] > params->THRESHOLD2){
                         peak2 = params->PEAKS[i];
                         break;
                        } 
                     }
+                    printf("MISS, adding %lf via searchback\n", peak2);
                     // Store peak2 as RPEAK
                     params->RPEAKS[params->numRPeaks] = peak2;
                     params->numRPeaks++;
@@ -103,13 +111,13 @@ void peakDetection(QRS_params *params, int filterOutput[])
                     params->THRESHOLD1 = params->NPKF + 0.25*(params->SPKF-params->NPKF);
                     params->THRESHOLD2 = 0.5*params->THRESHOLD1;
 
+                } else {
+                    
+                    params->THRESHOLD1 = params->NPKF + 0.25*(params->SPKF-params->NPKF);
+                    params->THRESHOLD2 = 0.5*params->THRESHOLD1;
                 }
 
-            } else {
-                // The peak is below the threshold, so it's noise, therefore modify the following parameters
-                params->NPKF = 0.125*filterOutput[1] + 0.875*params->NPKF;
-                params->THRESHOLD1 = params->NPKF + 0.25*(params->SPKF-params->NPKF);
-                params->THRESHOLD2 = 0.5*params->THRESHOLD1;
-            }
+            } 
+            
         }
 }

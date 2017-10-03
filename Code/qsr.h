@@ -3,10 +3,10 @@
 
 typedef struct QRS_params
 { // Structure for QRS parameters
-   int SPKF;
-   int NPKF; 
-   int THRESHOLD1;
-   int THRESHOLD2;
+   double SPKF;
+   double NPKF; 
+   double THRESHOLD1;
+   double THRESHOLD2;
    
    int numPeaks;
    int *PEAKS;
@@ -17,11 +17,13 @@ typedef struct QRS_params
    int numRecentRROK;
    int *RecentRROK;
 
-   int RR_AVERAGE1;
-   int RR_AVERAGE2;
-   int RR_LOW;
-   int RR_HIGH;
-   int RR_MISS;
+   int samplesSinceLastRpeak;
+
+   double RR_AVERAGE1;
+   double RR_AVERAGE2;
+   double RR_LOW;
+   double RR_HIGH;
+   double RR_MISS;
 } QRS_params;
 
 void peakDetection(QRS_params *params, int filterOutput[]);

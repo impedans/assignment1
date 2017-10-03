@@ -17,6 +17,10 @@ int main()
     qsr_params.RecentRR = calloc(8, 8*sizeof(double)); // Will only contain at most 8 elements
     qsr_params.numRecentRROK = 0;
     qsr_params.RecentRROK = calloc(8, 8*sizeof(double)); // Will only contain at most 8 elements
+    qsr_params.samplesSinceLastRpeak = 0;
+    qsr_params.RR_LOW = 0.92;
+    qsr_params.RR_HIGH = 1.16;
+    qsr_params.RR_MISS = 1.66;
     
 	FILE *file;                  // Pointer to a file object
 	file = openfile("ECG.txt");
@@ -49,6 +53,8 @@ int main()
             input[num_inputs-1] = getNextData(file);
         }    
 
+        qsr_params.samplesSinceLastRpeak++;
+
         //Make the final input visible for the low pass filter
         output_temp1[num_inputs-1] = output[num_inputs-1];
 
@@ -58,15 +64,26 @@ int main()
         derivativeFilter(output_temp2, output_temp3, num_inputs-1);
         squareFilter(output_temp3, num_inputs-1);
         movingWindowIntegration(output_temp3, output, num_inputs-1);
+        //printf("output: %d\n", output[num_inputs-1]);
         peakDetection(&qsr_params, output);
 
         //Debugging
         //Final action:
         //printf("\nItteration: %d. Outputs: %d, %d, %d To inputs: %d, %d, %d\n",num_inputs, output[num_inputs-1], output[num_inputs-2], output[num_inputs-3], input[num_inputs-1], input[num_inputs-2], input[num_inputs-3]);
+        //
+        // Print all R-peaks
 
 
     }
     
+    printf("num of peaks: %d\n", qsr_params.numRPeaks);
+    for (int i = 0; i < qsr_params.numRPeaks; i++){
+        printf("RPEAK: %d\n", qsr_params.RPEAKS[i]);
+    }
+
+    //for (int i = 0; i < 33; i++){
+        //printf("output[i]: %d\n", output[i]);
+    //}
 
 	return 0;
 }
