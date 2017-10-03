@@ -8,19 +8,26 @@
 
 int main()
 {	
-    QRS_params qsr_params;
-    qsr_params.numPeaks = 0;
-    qsr_params.PEAKS = malloc(sizeof(double)); // Will contain an unknown amount of elements
-    qsr_params.numRPeaks = 0;
-    qsr_params.RPEAKS = calloc(8, 8*sizeof(double)); // Will only contain at most 8 elements
-    qsr_params.numRecentRR = 0;
-    qsr_params.RecentRR = calloc(8, 8*sizeof(double)); // Will only contain at most 8 elements
-    qsr_params.numRecentRROK = 0;
-    qsr_params.RecentRROK = calloc(8, 8*sizeof(double)); // Will only contain at most 8 elements
-    qsr_params.samplesSinceLastRpeak = 0;
-    qsr_params.RR_LOW = 0.92;
-    qsr_params.RR_HIGH = 1.16;
-    qsr_params.RR_MISS = 1.66;
+    QRS_params qrs_params;
+    qrs_params.numPeaks = 0;
+    qrs_params.PEAKS = malloc(sizeof(int)); // Will contain an unknown amount of elements
+    //qsr_params.PEAKS = malloc(sizeof(double)); // Will contain an unknown amount of elements
+    qrs_params.numRPeaks = 0;
+    qrs_params.RPEAKS = malloc(sizeof(int)); // Will contain an unknown amount of RPeaks
+    qrs_params.numRecentRR = 0;
+    qrs_params.RecentRR = calloc(8, 8*sizeof(int)); // Will only contain at most 8 elements
+    //qsr_params.RecentRR = calloc(8, 8*sizeof(double)); // Will only contain at most 8 elements
+    qrs_params.numRecentRROK = 0;
+    qrs_params.RecentRROK = calloc(8, 8*sizeof(int)); // Will only contain at most 8 elements
+    //qsr_params.RecentRROK = calloc(8, 8*sizeof(double)); // Will only contain at most 8 elements
+
+    qrs_params.samplesSinceLastRpeak = 0;
+    qrs_params.samplesSinceLastRpeakTemp = 0;
+    //qsr_params.THRESHOLD1 = 0;
+    //qsr_params.THRESHOLD2 = 0;
+    //qsr_params.RR_LOW = 0;
+    //qsr_params.RR_HIGH = 0;
+    //qsr_params.RR_MISS = 0;
     
 	FILE *file;                  // Pointer to a file object
 	file = openfile("ECG.txt");
@@ -53,7 +60,8 @@ int main()
             input[num_inputs-1] = getNextData(file);
         }    
 
-        qsr_params.samplesSinceLastRpeak++;
+        qrs_params.samplesSinceLastRpeak++;
+        qrs_params.samplesSinceLastRpeakTemp++;
 
         //Make the final input visible for the low pass filter
         output_temp1[num_inputs-1] = output[num_inputs-1];
@@ -64,8 +72,8 @@ int main()
         derivativeFilter(output_temp2, output_temp3, num_inputs-1);
         squareFilter(output_temp3, num_inputs-1);
         movingWindowIntegration(output_temp3, output, num_inputs-1);
-        //printf("output: %d\n", output[num_inputs-1]);
-        peakDetection(&qsr_params, output);
+        //printf("%d, %d\n", qsr_params.samplesSinceLastRpeakTemp-1, output[num_inputs-1]);
+        peakDetection(&qrs_params, output, num_inputs);
 
         //Debugging
         //Final action:
@@ -76,9 +84,9 @@ int main()
 
     }
     
-    printf("num of peaks: %d\n", qsr_params.numRPeaks);
-    for (int i = 0; i < qsr_params.numRPeaks; i++){
-        printf("RPEAK: %d\n", qsr_params.RPEAKS[i]);
+    // Output the Rpeaks to console
+    for (int i = 0; i < qrs_params.numRPeaks; i++){
+        printf("%d\n", qrs_params.RPEAKS[i]);
     }
 
     //for (int i = 0; i < 33; i++){
