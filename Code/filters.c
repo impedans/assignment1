@@ -19,8 +19,6 @@ void lowPassFilter(int input[], int output[], int n){
             output[0] = input[n]/32;
         }
     }
-   
-//    printf("\nThese are the values %lf = 2*%lf-%lf+(1/32)*(%lf-2*%lf+%lf)\n", output[2], output[1], output[0], input[n], input[n-6], input[n-12]);
 }
 
 void highPassFilter(int input[], int output[], int n){
