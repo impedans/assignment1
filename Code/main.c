@@ -8,19 +8,20 @@
 
 int main()
 {	
-    //Variable initialization for QRS calculations
-    QRS_params qrs_params;
-    qrs_params.numPeaks = 0;
-    qrs_params.PEAKS = malloc(sizeof(int)); // Will contain an unknown amount of elements
-    qrs_params.numRPeaks = 0;
-    qrs_params.RPEAKS = malloc(sizeof(int)); // Will contain an unknown amount of RPeaks
-    qrs_params.numRecentRR = 0;
-    qrs_params.RecentRR = calloc(8, 8*sizeof(int)); // Will only contain at most 8 elements
-    qrs_params.numRecentRROK = 0;
-    qrs_params.RecentRROK = calloc(8, 8*sizeof(int)); // Will only contain at most 8 elements
+    //Variable initialization for QSR calculations
+    QSR_params qsr_params;
+    qsr_params.samplesTotal = 0;
+    qsr_params.numPeaks = 0;
+    qsr_params.PEAKS = malloc(sizeof(int)); // Will contain an unknown amount of elements
+    qsr_params.numRPeaks = 0;
+    qsr_params.RPEAKS = malloc(sizeof(int)); // Will contain an unknown amount of RPeaks
+    qsr_params.numRecentRR = 0;
+    qsr_params.RecentRR = calloc(8, 8*sizeof(int)); // Will only contain at most 8 elements
+    qsr_params.numRecentRROK = 0;
+    qsr_params.RecentRROK = calloc(8, 8*sizeof(int)); // Will only contain at most 8 elements
+    qsr_params.RR_MISS_COUNT = 0;
 
-    qrs_params.samplesSinceLastRpeak = 0;
-    qrs_params.samplesSinceLastRpeakTemp = 0;
+    qsr_params.samplesSinceLastRpeak = 0;
     
     //Pointer to a file object
 	FILE *file;
@@ -54,8 +55,7 @@ int main()
             input[index-1] = getNextData(file);
         }    
 
-        qrs_params.samplesSinceLastRpeak++;
-        qrs_params.samplesSinceLastRpeakTemp++;
+        qsr_params.samplesSinceLastRpeak++;
 
         //Make the final input visible for the low pass filter
         output_temp1[index-1] = output[index-1];
@@ -66,14 +66,12 @@ int main()
         derivativeFilter(output_temp2, output_temp3, index-1);
         squareFilter(output_temp3, index-1);
         movingWindowIntegration(output_temp3, output, index-1);
-        peakDetection(&qrs_params, output, index-1);
-    }
-    
-    // Output the Rpeaks to console
-    for (int i = 0; i < qrs_params.numRPeaks; i++){
-        printf("%d\n", qrs_params.RPEAKS[i]);
-    }
 
+        //Peak detection:
+        qsr_params.samplesTotal++;
+        peakDetection(&qsr_params, output, index-1);
+
+    }
 	return 0;
 }
 
